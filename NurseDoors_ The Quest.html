@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NurseDoors: The Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F7F7;--card:#FFFFFF;--ink:#12303A;--muted:#5A7480;--teal:#0E7C86;--teal-d:#0A5A62;--tint:#DDF0F0;--amber:#F2A33A;--line:#CFE1E3;--ok:#1E9E5A;--bad:#D6453D;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0C1D23;--card:#14303A;--ink:#E6F2F3;--muted:#9BB4BB;--teal:#4FC3CC;--teal-d:#8EE0E6;--tint:#1B4450;--line:#26505D}}
+:root[data-theme="dark"]{--bg:#0C1D23;--card:#14303A;--ink:#E6F2F3;--muted:#9BB4BB;--teal:#4FC3CC;--teal-d:#8EE0E6;--tint:#1B4450;--line:#26505D}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Public Sans',system-ui,sans-serif;line-height:1.5;min-height:100%;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:'Bricolage Grotesque','Public Sans',system-ui,sans-serif;line-height:1.1;margin:0}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px}
+.big{font-size:3rem;line-height:1}
+.btn{display:inline-block;background:var(--teal);color:#fff;border:0;border-radius:14px;padding:14px 22px;font:700 1.05rem 'Public Sans',sans-serif;cursor:pointer;text-decoration:none;text-align:center;margin:3px 4px 3px 0}
+.btn.ghost{background:transparent;color:var(--teal-d);border:2px solid var(--teal)}
+.btn.gold{background:var(--amber);color:#3b2600}
+.btn.block{display:block;width:100%;margin:8px 0 0}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.muted{color:var(--muted);font-size:.92rem}
+.hero{text-align:center;padding:30px 20px}
+.hero h1{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin:10px 0 8px}
+.how{text-align:left;margin:14px 0;padding:0;list-style:none}
+.how li{padding:6px 0;font-size:.95rem}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px}
+.prog,.timer{height:8px;background:var(--tint);border-radius:8px;overflow:hidden;margin-bottom:8px}
+.prog i{display:block;height:100%;background:var(--teal);border-radius:8px;transition:width .3s}
+.timer{height:10px;margin-bottom:14px}.timer i{display:block;height:100%;width:100%;background:var(--amber);border-radius:10px}
+.tag{display:inline-block;background:var(--tint);color:var(--teal-d);border-radius:20px;padding:2px 10px;font-size:.78rem;font-weight:700}
+.q{font-size:1.3rem;font-weight:700;margin:8px 0 16px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:9px;font:500 1rem 'Public Sans',sans-serif;cursor:pointer;transition:transform .12s,background .2s,opacity .2s}
+.opt:active{transform:scale(.97)}
+.opt.picked{background:var(--teal);color:#fff;border-color:var(--teal)}
+.opt.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.opt:disabled{opacity:.3;cursor:default}
+.pu{display:flex;gap:8px;margin-top:4px}
+.pu button{flex:1;background:var(--tint);color:var(--teal-d);border:0;border-radius:12px;padding:10px;font:700 .85rem 'Public Sans',sans-serif;cursor:pointer}
+.pu button:disabled{opacity:.4}
+.rev{animation:rise .35s both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.rev h2{font-size:1.5rem;margin-bottom:8px}
+.ins{background:var(--tint);border-radius:14px;padding:12px 14px;margin:10px 0;font-size:.97rem}
+.word{border-left:5px solid var(--amber);padding:6px 12px;margin:10px 0;font-size:.93rem}
+.res{text-align:center;animation:rise .5s both}
+.res h2{font-size:1.9rem;margin:8px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}
+.chip{background:var(--tint);color:var(--teal-d);border-radius:20px;padding:4px 12px;font-size:.85rem;font-weight:600}
+.kv{text-align:left;margin-top:10px}.kv b{display:block;color:var(--teal-d);font-size:.85rem}
+.stats{display:flex;gap:8px;margin:12px 0}
+.stats div{flex:1;background:var(--tint);border-radius:14px;padding:10px 4px;font-size:.78rem;color:var(--muted)}
+.stats b{display:block;font-size:1.3rem;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif}
+.row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:.88rem}
+.row span:first-child{width:150px;flex:none}
+.row .b{flex:1;height:10px;background:var(--tint);border-radius:10px;overflow:hidden}
+.row .b i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--amber));border-radius:10px;transition:width .9s .2s}
+details summary{cursor:pointer;font:700 1.1rem 'Bricolage Grotesque',sans-serif}
+details dl{margin:10px 0 0}details dt{font-weight:700;color:var(--teal-d);margin-top:8px}details dd{margin:0;font-size:.92rem}
+.locked{position:relative;margin-top:10px}
+.locked ul{filter:blur(5px);margin:0;padding-left:20px;user-select:none}
+.locked .lock{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700}
+.sp{border:2px dashed var(--amber)}
+.aff a{display:block;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-top:8px;color:var(--ink);text-decoration:none;font-weight:600}
+.small{font-size:.78rem;color:var(--muted);margin-top:10px}
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translate(-50%,-90px);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:20px;font-weight:700;transition:transform .3s;z-index:9;text-align:center;max-width:90vw}
+#toast.show{transform:translate(-50%,0)}
+#conf{position:fixed;inset:0;pointer-events:none;z-index:8}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;justify-content:flex-start}
+.pills button{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:7px 12px;font:600 .82rem 'Public Sans',sans-serif;cursor:pointer}
+.pills button[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.tabs button{flex:none;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:20px;padding:7px 12px;font:600 .85rem 'Public Sans',sans-serif;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--amber);color:#3b2600;border-color:var(--amber)}
+.panel{background:var(--tint);border-radius:14px;padding:12px 14px;margin-top:8px;min-height:64px}
+.mode{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;cursor:pointer;font:inherit}
+.mode:active{transform:scale(.98)}
+.mode .me{font-size:2.2rem}.mode b{display:block;font:700 1.15rem 'Bricolage Grotesque',sans-serif}.mode small{display:block;color:var(--muted);font-size:.88rem}
+.back{background:none;border:0;color:var(--teal-d);font:700 .95rem 'Public Sans',sans-serif;cursor:pointer;padding:4px 0 10px}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit}
+.hall{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:18px 12px;border-radius:20px;background:linear-gradient(var(--tint),var(--card));border:1px solid var(--line)}
+.door{position:relative;border:3px solid var(--teal);border-radius:60px 60px 8px 8px;background:var(--card);color:var(--ink);padding:22px 8px 14px;text-align:center;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:150px;justify-content:center}
+.door .knob{position:absolute;right:12px;top:58%;width:10px;height:10px;border-radius:50%;background:var(--amber)}
+.door .de{font-size:2.1rem}.door b{font-size:.92rem;line-height:1.2}.door small{color:var(--muted);font-size:.78rem}
+.door.locked{border-style:dashed;border-color:var(--line);opacity:.6;background:var(--bg)}
+.door.open{box-shadow:0 6px 16px rgba(14,124,134,.25)}
+.seq{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;margin:8px 0}
+.seq span{background:var(--teal);color:#fff;border-radius:10px;padding:6px 10px;font-size:.88rem;font-weight:600}
+.scale{display:flex;gap:6px;margin:6px 0 14px}
+.scale button{flex:1;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 2px;font:600 .78rem 'Public Sans',sans-serif;cursor:pointer}
+.scale button[aria-pressed="true"]{background:var(--teal);color:#fff;border-color:var(--teal)}
+.chk{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);border-radius:12px;padding:11px;margin-bottom:8px;font:500 .95rem 'Public Sans',sans-serif;cursor:pointer}
+.chk[aria-pressed="true"]{border-color:var(--teal);background:var(--tint)}
+ul.bl{margin:6px 0 0;padding-left:20px}ul.bl li{margin:4px 0;font-size:.95rem}
+.opt.ok:disabled{opacity:1}
+.mx{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mx .opt{font-size:.85rem;padding:10px;margin-bottom:8px}
+.mf{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mf .opt{text-align:center;font-weight:700}
+.gh{margin:16px 0 6px;font:700 1rem 'Bricolage Grotesque',sans-serif;color:var(--teal-d)}
+.mi{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.mi b{display:block;font-size:.95rem}.mi span{display:block;font-size:.85rem;color:var(--muted)}
+.hb{flex:none;border:1.5px solid #E5527A;background:transparent;color:#E5527A;border-radius:20px;padding:4px 10px;font:600 .85rem 'Public Sans',sans-serif;cursor:pointer}
+.hb[aria-pressed="true"]{background:#E5527A;color:#fff}
+.sr{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:500 1rem 'Public Sans',sans-serif;margin-bottom:8px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="conf"></canvas><div id="toast" role="status"></div>
+<div class="wrap" id="app"></div>
+<script>
+/* ====== MONEY SETTINGS: edit, then republish ====== */
+const BRAND="NurseDoors";
+const CONFIG={
+ premiumUrl:"", premiumPrice:"$4.99",
+ affiliates:[{label:"📚 Nursing exam prep resources",url:""},{label:"👟 Scrubs & comfy shoes",url:""},{label:"🏫 Find nursing programs",url:""}],
+ sponsor:{name:"",pitch:"",url:""}
+};
+const OPP=[["🩺","Clinical","c"],["🎓","Education","e"],["🔬","Research","r"],["🧭","Leadership","l"],["🏛️","Policy","p"],["💡","Innovation","i"]];
+const TYPES={
+ER:{e:"🚑",n:"The Rapid Responder",tag:"Calm in chaos and fast on your feet.",careers:["Emergency nurse","Trauma nurse","Flight or transport nurse"],edu:"Nursing degree or diploma, plus emergency and life-support training",step:"Ask for an emergency department placement and take a basic life support course.",
+ opp:{c:"Emergency, trauma and flight or transport nursing; disaster and humanitarian response.",e:"Emergency care instructor, simulation trainer, clinical educator.",r:"Studies on triage accuracy, injury prevention and emergency care outcomes.",l:"Charge nurse, emergency department manager, director of emergency services.",i:"Triage tools, tele-emergency care and emergency response technology."}},
+ICU:{e:"🫀",n:"The Deep Diver",tag:"You love complex puzzles and close monitoring.",careers:["ICU nurse","Cardiac nurse","Nurse anesthetist (where the role exists)"],edu:"Nursing degree plus critical care experience; postgraduate study for advanced roles",step:"Look for a critical care graduate or residency program.",
+ opp:{c:"Intensive care, cardiac care, rapid response teams, and nurse anesthesia in countries that have the role.",e:"Critical care educator, simulation lab instructor, university lecturer.",r:"Sepsis, ventilation and patient safety studies; clinical trial nurse.",l:"ICU charge nurse, unit manager, clinical nurse specialist.",i:"Monitoring devices, early warning systems and tele-ICU."}},
+PEDS:{e:"🧸",n:"The Playmaker",tag:"Kids trust you and families lean on you.",careers:["Pediatric or child nurse","Neonatal nurse","School nurse"],edu:"Nursing degree (some countries offer child nursing programs); postgraduate study for advanced practice",step:"Volunteer with children and request a child health placement.",
+ opp:{c:"Children's wards, neonatal care, school nursing and advanced pediatric practice.",e:"Child health educator, school health programs, university lecturer.",r:"Child health, vaccination uptake and family-centered care studies.",l:"Pediatric unit manager, child health program lead.",i:"Kid-friendly health apps, play-based therapy tools and pediatric device design."}},
+BIRTH:{e:"👶",n:"The Birth Cheerleader",tag:"You bring joy, patience and encouragement.",careers:["Maternity nurse","Postpartum nurse","Midwife (a separate profession in many countries)"],edu:"Nursing degree for maternity nursing; midwifery is its own program in many countries",step:"Request a maternity placement and shadow a midwife.",
+ opp:{c:"Labor and postpartum care, antenatal clinics, midwifery and lactation support.",e:"Antenatal class educator, midwifery lecturer, community health trainer.",r:"Maternal and newborn outcomes and safe birth practices.",l:"Maternity unit manager, maternal health program director.",i:"Maternal telehealth, remote pregnancy monitoring and low-cost tools for low-resource settings."}},
+MIND:{e:"🧠",n:"The Mind Anchor",tag:"A steady listener who stays calm when others can't.",careers:["Mental health nurse","Crisis nurse","Addiction care nurse"],edu:"Nursing degree (mental health nursing is a direct-entry program in some countries)",step:"Look for a mental health placement or volunteer with a helpline.",
+ opp:{c:"Inpatient psychiatry, crisis teams, community mental health and addiction care.",e:"Mental health first aid trainer, psychiatric nursing lecturer.",r:"Recovery, stigma reduction and digital mental health trials.",l:"Mental health service lead, program coordinator.",i:"Therapy apps, crisis line technology and peer-support platforms."}},
+COMM:{e:"🏘️",n:"The Community Connector",tag:"You help whole neighborhoods stay healthy.",careers:["Public health nurse","School nurse","Home care or palliative nurse"],edu:"Nursing degree; many roles prefer a bachelor's and public health training",step:"Volunteer with a local clinic, NGO or health department.",
+ opp:{c:"Public health, school nursing, home care, palliative care and community clinics.",e:"Community health educator, health promotion trainer.",r:"Population health, disease prevention and health equity studies.",l:"Public health program manager, health policy advisor, NGO program lead.",i:"Community health worker tools, mobile clinics and outbreak tracking."}},
+SYS:{e:"🧭",n:"The Systems Strategist",tag:"You spot what's broken and fix how care works.",careers:["Nurse navigator or case manager","Nursing informatics","Nurse educator"],edu:"Nursing degree, then postgraduate study or certificates for some roles",step:"Build clinical experience first, then take on coordination or digital projects.",
+ opp:{c:"Nurse navigator, case manager, quality and patient safety nurse.",e:"Nurse educator, professional development lead, curriculum designer.",r:"Health services research, nursing informatics and implementation science.",l:"Nurse manager, chief nursing officer, health policy roles.",i:"Health record design, digital health startups and AI tools for nurses."}},
+OR:{e:"🧤",n:"The Precision Pro",tag:"Detail-minded, steady hands, zero shortcuts.",careers:["Operating theater nurse","Procedural nurse","Surgical first assistant (where available)"],edu:"Nursing degree plus perioperative training or a residency",step:"Ask for an operating theater placement.",
+ opp:{c:"Operating theater nursing, endoscopy, sterile services and surgical first assistant roles where available.",e:"Perioperative educator, surgical skills trainer.",r:"Surgical safety, infection prevention and instrument tracking studies.",l:"Theater manager, perioperative services director.",i:"Surgical technology support, instrument tracking tools and sterile process design."}}
+};
+const POL={ER:"Emergency care and disaster preparedness policy, trauma system planning and injury prevention advocacy.",ICU:"Critical care staffing standards, patient safety policy and health technology regulation.",PEDS:"Child health policy, immunization programs, school health and child protection advocacy.",BIRTH:"Maternal and newborn health policy, safe birth standards and midwifery regulation.",MIND:"Mental health policy, anti-stigma campaigns and crisis service planning.",COMM:"Public health policy, health equity advocacy and community programs with governments and NGOs.",SYS:"Health workforce planning, health system reform and digital health policy.",OR:"Surgical safety standards, infection prevention policy and perioperative staffing guidelines."};
+Object.keys(POL).forEach(k=>TYPES[k].opp.p=POL[k]);
+const TERMS={
+triage:["Triage","Sorting patients by how urgently they need care."],
+peds:["Pediatrics","Care for babies, children and teens."],
+vitals:["Vital signs","Heart rate, blood pressure, breathing rate, temperature and oxygen level."],
+tc:["Therapeutic communication","Listening and speaking in ways that help patients feel safe and heard."],
+tb:["Teach-back","Asking patients to explain or show a skill in their own words to confirm they understood."],
+ehr:["EHR","Electronic health record (also called EMR): a patient's digital chart."],
+periop:["Perioperative","The time before, during and after surgery."],
+ph:["Public health","Keeping whole communities healthy through prevention and education."],
+reg:["Registration / licensure","The legal step that lets you work as a nurse. Your national or state regulator sets the rules, and often an exam."],
+sbar:["SBAR","Situation, Background, Assessment, Recommendation: a clear way to hand off information."],
+cna:["Nursing assistant (HCA)","Helps with daily care. Also called CNA, healthcare assistant or nursing aide, depending on the country."],
+np:["Advanced practice nurse","A nurse with postgraduate training who can take on expanded roles, such as nurse practitioners."],
+prec:["Preceptor","An experienced nurse who trains and mentors a newer nurse or student. Some countries say mentor."]
+};
+const SC=[
+["🚨","Five patients arrive at once. What's your first move?",[["Sort by who's sickest, fast",["ER",2,"ICU",1]],["Make a quick checklist so no one is missed",["SYS",2,"OR",1]],["Calm the most scared family first",["COMM",2,"PEDS",1]],["Split the work with a coworker",["ER",1,"COMM",1]]],"Nurses use triage systems to decide who needs care first. The sickest patient isn't always the one who arrived first or looks the worst.","triage"],
+["🧒","A 5-year-old is terrified of a shot.",[["Turn it into a game",["PEDS",2,"BIRTH",1]],["Explain it simply to the parent too",["COMM",2,"PEDS",1]],["Be quick and gentle, done in seconds",["ER",2,"OR",1]],["Ask what helps them feel safe",["MIND",2,"PEDS",1]]],"Pediatric nurses often use play, distraction and simple words. Kids cope better when they know what to expect.","peds"],
+["📟","A monitor alarm goes off and the numbers are tricky.",[["Study the trends to see what's changing",["ICU",2,"SYS",1]],["Act now and call for help",["ER",2,"ICU",1]],["Check the equipment and patient step by step",["OR",2,"ICU",1]],["Look for a pattern in the whole chart",["SYS",2,"ICU",1]]],"Critical care nurses watch trends over time, not just one number, and speak up early when a patient is changing.","vitals"],
+["💭","A patient is crying and says they can't cope.",[["Sit down and just listen",["MIND",2,"COMM",1]],["Connect them with support resources",["COMM",2,"SYS",1]],["Stay calm and use grounding words",["MIND",2,"ER",1]],["Bring in the care team",["SYS",1,"ICU",1]]],"Mental health nurses use active listening and de-escalation. Often the first step is helping someone feel heard.","tc"],
+["🍼","A new mom is nervous about taking her baby home.",[["Teach step by step",["BIRTH",2,"PEDS",1]],["Cheer her on and build her confidence",["BIRTH",2,"COMM",1]],["Give a written plan and a follow-up call",["SYS",2,"COMM",1]],["Practice together with her partner",["PEDS",1,"BIRTH",1]]],"Postpartum nurses teach feeding, safe sleep and warning signs. Asking parents to show you what they learned checks real understanding.","tb"],
+["💻","The charting system keeps slowing everyone down.",[["Find the fix and test it",["SYS",2,"OR",1]],["Teach teammates a workaround",["SYS",1,"COMM",1]],["Keep going, patients come first",["ER",1,"ICU",1]],["Track the lost minutes with data",["SYS",2,"ICU",1]]],"Nursing informatics specialists work on health records and technology to make care safer and faster.","ehr"],
+["🧼","Before a procedure, everything must be set up perfectly.",[["Count and double-check every item",["OR",2,"ICU",1]],["Talk the patient through it to calm them",["COMM",1,"MIND",1]],["Confirm the plan with the whole team",["SYS",1,"OR",1]],["Get it ready in minutes",["ER",2]]],"Operating room nurses rely on checklists and instrument counts to keep patients safe during surgery.","periop"],
+["🎪","A community health fair needs a nurse volunteer.",[["Do blood pressure checks and chat",["COMM",2]],["Teach a short class on a health topic",["COMM",1,"SYS",1]],["Run check-in so lines move smoothly",["SYS",2,"ER",1]],["Pass. I prefer the hospital",["ICU",1,"ER",1]]],"Public health nurses focus on prevention: screenings, vaccines and education for whole communities.","ph"]
+];
+const TQ=[
+["📝","In most countries, what must nursing graduates do before they can practise as a registered nurse?",["Register or get licensed with the nursing regulator","Nothing, a degree is enough","Earn a medical degree","Work unpaid for a year"],"Nurses usually register with a national or state regulator, often after an exam. Examples: NCLEX-RN in the US and Canada, NMC registration in the UK, and the PNLE in the Philippines.","reg"],
+["🗣️","SBAR, used in many countries, helps nurses to…",["Hand off information clearly and quickly","Measure blood pressure","Order supplies","Schedule shifts"],"SBAR stands for Situation, Background, Assessment, Recommendation. It keeps hand-offs short and clear.","sbar"],
+["⏱️","Which role usually has the quickest training, often weeks to a few months?",["Nursing assistant or healthcare assistant","Nurse practitioner","Nurse anesthetist","Nurse manager"],"Names vary (CNA, HCA, nursing aide) and so does training length, but it's a common first step into healthcare.","cna"],
+["🎓","What do advanced practice nurses, like nurse practitioners, usually need?",["Postgraduate study after their nursing degree","A 2-week certificate","Nothing extra","A high school diploma only"],"Rules differ by country, but advanced practice roles usually need a master's or similar postgraduate training plus extra registration.","np"],
+["🤝","A veteran nurse who trains and mentors a new nurse is called a…",["Preceptor","Auditor","Dispatcher","Orderly"],"Preceptors guide new grads and students through their first months. Some countries use the word mentor.","prec"]
+];
+const ORDER=[["s",0],["s",1],["t",0],["s",2],["s",3],["t",1],["s",4],["t",2],["s",5],["s",6],["t",3],["s",7],["t",4]];
+const MS=12000;
+const $=id=>document.getElementById(id);
+const app=$('app');
+let S,timer,locked=false,dl=0,total=MS;
+const left=()=>Math.max(0,dl-Date.now());
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200)}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+function confetti(){
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const cv=$('conf'),x=cv.getContext('2d');cv.width=innerWidth;cv.height=innerHeight;
+ const cols=['#F2A33A','#0E7C86','#E5527A','#6CC3C9','#FFD479'];
+ const P=Array.from({length:90},()=>({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*14,vy:-Math.random()*14-3,s:4+Math.random()*6,c:cols[Math.random()*5|0],r:Math.random()*6}));
+ let f=0;(function go(){x.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.r+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore()});if(++f<110)requestAnimationFrame(go);else x.clearRect(0,0,cv.width,cv.height)})();
+}
+const REGIONS=[
+["🌎","US & Canada","Complete an approved nursing program (in the US an associate or bachelor's degree; in Canada usually a bachelor's), then pass the NCLEX-RN and register with your state or provincial regulator."],
+["🇬🇧","UK & Ireland","Study an approved nursing degree (a degree apprenticeship is also an option in the UK), then register with the regulator: the NMC in the UK or NMBI in Ireland."],
+["🦘","Australia & NZ","Complete an approved Bachelor of Nursing, then register with the Nursing and Midwifery Board of Australia (through AHPRA) or the Nursing Council of New Zealand."],
+["🌍","Africa","Train at an approved school of nursing or university, then register with your national council, such as NMCN in Nigeria, the NMC in Ghana or SANC in South Africa. Levels and exams vary."],
+["🌏","Asia","Programs vary. For example: a B.Sc. Nursing or GNM diploma in India (registered with the Indian Nursing Council and state councils), or a BSN plus the PNLE in the Philippines."],
+["🕌","Middle East","Most countries require a recognized nursing qualification plus a local licensing process, sometimes with an exam. Rules differ by country and region."],
+["🧭","Elsewhere","Search for your country's national nursing council or ministry of health. It lists approved programs, licensing steps and any exams."]
+];
+let region=null;
+function home(){
+ clearInterval(timer);
+ const L=lvOf(H.xp);
+ app.innerHTML=`<div class="card hero"><div class="big">🚪</div><h1>${BRAND}: The Quest</h1>
+ <p style="font-weight:700;color:var(--teal-d);margin:0 0 6px;font-size:1.1rem">Which door will you open?</p>
+ <p class="muted" style="margin:0">No nursing experience needed. Explore, play and find out if nursing is for you.</p></div>
+ <button class="mode" id="m0" style="border-color:var(--amber);border-width:2px"><span class="me">🌱</span><span><b>Start Here: new to nursing?</b><small>Reality check, "Is nursing for me?" and your first 90 days. No experience needed</small></span></button><button class="mode" id="m1"><span class="me">🏥</span><span><b>The Hallway</b><small>Solve puzzles, level up and unlock career doors · Level ${L}</small></span></button>
+ <button class="mode" id="m4"><span class="me">🗺️</span><span><b>Career Map</b><small>Every area of nursing across clinical, education, research, leadership, policy and innovation</small></span></button>
+ <button class="mode" id="m2"><span class="me">⚡</span><span><b>Shift Rush</b><small>Quick game: find your nurse type and learn nursing words</small></span></button>
+ <button class="mode" id="m3"><span class="me">🛡️</span><span><b>Stay Strong</b><small>Spot burnout early and plan to thrive on the job</small></span></button>
+ <p class="small" style="text-align:center">A career exploration game, not clinical training or medical advice.</p>`;
+ $('m0').onclick=beginV;$('m1').onclick=hall;$('m4').onclick=mapV;$('m2').onclick=rushIntro;$('m3').onclick=stay;
+}
+function rushIntro(){
+ app.innerHTML=`<button class="back" id="bk">← Menu</button><div class="card hero"><div class="big">⚡</div><h1>Shift Rush</h1>
+ <p class="muted" style="font-size:1.05rem;margin:0">Play a nursing shift, learn real nursing terms, and discover your nurse type.</p>
+ <ul class="how"><li>🚨 <b>Patient cases</b> reveal your nurse type</li><li>📝 <b>Quick quizzes</b> test what you know</li><li>🌍 <b>Career paths</b> in clinical, education, research, leadership and innovation</li><li>✂️ <b>Power-ups</b>: 50/50 and +5 seconds</li></ul>
+ <p class="muted" style="text-align:left;margin:0 0 6px"><b>Where are you? (optional)</b></p>
+ <div class="pills">${REGIONS.map((r,i)=>`<button data-i="${i}" aria-pressed="${region===i}">${r[0]} ${r[1]}</button>`).join('')}</div>
+ <button class="btn block" id="go">Start your shift</button></div>`;
+ app.querySelectorAll('.pills button').forEach(b=>b.onclick=()=>{region=region===+b.dataset.i?null:+b.dataset.i;app.querySelectorAll('.pills button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.i===region))});
+ $('go').onclick=start;$('bk').onclick=home;
+}
+function start(){S={r:0,sc:{},xp:0,streak:0,max:0,iq:0,pu:{half:1,time:1},seen:[]};Object.keys(TYPES).forEach(t=>S.sc[t]=0);round()}
+function hud(){return `<div class="hud"><span>Round ${S.r+1}/${ORDER.length}</span><span>${S.streak>1?'🔥 '+S.streak+'  ':''}⭐ ${S.xp}</span></div><div class="prog"><i style="width:${S.r/ORDER.length*100}%"></i></div><div class="timer"><i id="tb"></i></div>`}
+function runTimer(cb){clearInterval(timer);total=MS;dl=Date.now()+MS;const tb=$('tb');timer=setInterval(()=>{const l=left();tb.style.width=Math.min(100,l/total*100)+'%';if(l<=0){clearInterval(timer);cb()}},100)}
+function round(){
+ clearInterval(timer);locked=false;
+ if(S.r>=ORDER.length)return result();
+ const [k,i]=ORDER[S.r];k==='s'?scen(i):triv(i);
+}
+function reveal(o){
+ const w=TERMS[o.term];if(!S.seen.includes(o.term))S.seen.push(o.term);
+ app.innerHTML=`<div class="hud"><span>Round ${S.r+1}/${ORDER.length}</span><span>${S.streak>1?'🔥 '+S.streak+'  ':''}⭐ ${S.xp}</span></div><div class="prog"><i style="width:${(S.r+1)/ORDER.length*100}%"></i></div>
+ <div class="card rev"><h2>${o.head}</h2>${o.sub?`<p class="muted" style="margin:0 0 6px">${o.sub}</p>`:''}
+ <div class="ins">💡 ${o.body}</div><div class="word"><b>📖 New word: ${w[0]}</b><br>${w[1]}</div>
+ <button class="btn block" id="nx">${S.r+1>=ORDER.length?'See my results':'Next patient'}</button></div>`;
+ $('nx').onclick=()=>{S.r++;round()};
+}
+function scen(i){
+ const [em,q,opts,ins,term]=SC[i];
+ app.innerHTML=hud()+`<div class="card"><span class="tag">Patient case</span><div class="big" style="margin-top:8px">${em}</div><div class="q">${q}</div>
+ ${opts.map((o,n)=>`<button class="opt" data-i="${n}">${o[0]}</button>`).join('')}</div>`;
+ runTimer(()=>{if(locked)return;locked=true;S.streak=0;reveal({head:"⏰ Time's up!",body:ins,term})});
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+  if(locked)return;locked=true;clearInterval(timer);
+  const l=Math.min(left(),MS),w=opts[b.dataset.i][1];
+  for(let k=0;k<w.length;k+=2)S.sc[w[k]]+=w[k+1];
+  S.xp+=10+Math.round(l/MS*20)+Math.min(S.streak,5)*2;S.streak++;S.max=Math.max(S.max,S.streak);
+  b.classList.add('picked');
+  setTimeout(()=>reveal({head:"Nice choice!",sub:`That points toward ${TYPES[w[0]].e} ${TYPES[w[0]].n}.`,body:ins,term}),380)});
+}
+function triv(i){
+ const [em,q,opts,ex,term]=TQ[i];
+ const list=shuffle(opts.map((t,n)=>({t,c:n===0})));
+ app.innerHTML=hud()+`<div class="card"><span class="tag">Quick quiz</span><div class="big" style="margin-top:8px">${em}</div><div class="q">${q}</div>
+ ${list.map((o,n)=>`<button class="opt" data-n="${n}">${o.t}</button>`).join('')}
+ <div class="pu"><button id="p1" ${S.pu.half?'':'disabled'}>✂️ 50/50 (${S.pu.half})</button><button id="p2" ${S.pu.time?'':'disabled'}>⏱️ +5 sec (${S.pu.time})</button></div></div>`;
+ const btns=[...app.querySelectorAll('.opt')];
+ const finish=(ok,b)=>{
+  btns.forEach((x,n)=>{x.disabled=true;if(list[n].c)x.classList.add('ok');else if(x===b)x.classList.add('bad')});
+  if(ok){S.xp+=25+Math.round(Math.min(left(),MS)/MS*25)+Math.min(S.streak,5)*2;S.iq++;S.streak++;S.max=Math.max(S.max,S.streak)}else S.streak=0;
+  setTimeout(()=>reveal({head:ok?"✅ Correct!":"❌ Not quite",sub:ok?'':`The answer: ${opts[0]}`,body:ex,term}),650)};
+ runTimer(()=>{if(locked)return;locked=true;finish(false,null)});
+ btns.forEach((b,n)=>b.onclick=()=>{if(locked)return;locked=true;clearInterval(timer);finish(list[n].c,b)});
+ $('p1').onclick=()=>{if(locked||!S.pu.half)return;S.pu.half--;const w=shuffle(btns.filter((x,n)=>!list[n].c)).slice(0,2);w.forEach(x=>x.disabled=true);$('p1').disabled=true;$('p1').textContent='✂️ 50/50 (0)'};
+ $('p2').onclick=()=>{if(locked||!S.pu.time)return;S.pu.time--;dl+=5000;total+=5000;$('p2').disabled=true;$('p2').textContent='⏱️ +5 sec (0)';toast('+5 seconds!')};
+}
+function rank(){return S.xp>=320?"Nurse Leader":S.xp>=220?"Charge Nurse":S.xp>=120?"Student Nurse":"Orientation Rookie"}
+function result(){
+ const arr=Object.entries(S.sc).sort((a,b)=>b[1]-a[1]),top=arr[0],mx=Math.max(1,top[1]);
+ const T=TYPES[top[0]];lastType=top[0];
+ const aff=CONFIG.affiliates.filter(a=>a.url),sp=CONFIG.sponsor;
+ const badges=[];if(S.iq===TQ.length)badges.push("🏅 Perfect Nurse IQ");if(S.max>=8)badges.push("🔥 Streak Star");if(S.iq>=3)badges.push("🧠 Quick Learner");
+ const R=region===null?null:REGIONS[region];
+ const premium=CONFIG.premiumUrl?`<a class="btn gold block" href="${CONFIG.premiumUrl}" target="_blank" rel="noopener">Unlock my roadmap ${CONFIG.premiumPrice}</a>`:`<button class="btn gold block" id="wait">Unlock my roadmap ${CONFIG.premiumPrice}</button>`;
+ app.innerHTML=`<div class="card res"><p class="muted" style="margin:0">Your nurse type is</p><div class="big">${T.e}</div><h2>${T.n}</h2><p style="margin:0">${T.tag}</p>
+ <div class="stats"><div><b>${rank().split(' ')[0]}</b>${rank().split(' ').slice(1).join(' ')||'rank'}</div><div><b>${S.iq}/${TQ.length}</b>Nurse IQ</div><div><b>${S.xp}</b>XP</div></div>
+ ${badges.length?`<div class="chips">${badges.map(b=>`<span class="chip">${b}</span>`).join('')}</div>`:''}
+ <div class="chips">${T.careers.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+ <button class="btn block" id="share">Share my result 📣</button><button class="btn ghost block" id="again">Play again</button><button class="btn ghost block" id="menu">Main menu</button></div>
+ <div class="card"><h3>Opportunities for ${T.n}</h3><p class="muted" style="margin:4px 0 10px">Most nurses mix several tracks over a career. Tap each one.</p>
+ <div class="tabs">${OPP.map((o,n)=>`<button data-k="${o[2]}" aria-selected="${n===0}">${o[0]} ${o[1]}</button>`).join('')}</div><div class="panel" id="panel">${T.opp.c}</div><button class="btn ghost block" id="tomap">Explore the full Career Map 🗺️</button></div>
+ <div class="card"><h3>🌍 Getting started${R?' in '+R[1]:''}</h3><p style="margin:8px 0">${R?R[2]:"Nursing pathways differ by country. Pick your region on the home screen to see local steps, or search for your national nursing council."}</p>
+ <div class="kv"><b>Education</b>${T.edu}</div><div class="kv"><b>Your first step</b>${T.step}</div>
+ <p class="small">Nursing skills travel, but licenses usually don't. Working in another country typically means registering there, and some regulators ask for extra assessments. Always confirm current rules with your national regulator.</p></div>
+ <div class="card"><h3 style="margin-bottom:8px">Your trait mix</h3>${arr.map(([k,v])=>`<div class="row"><span>${TYPES[k].e} ${TYPES[k].n.replace('The ','')}</span><div class="b"><i data-w="${Math.round(v/mx*100)}"></i></div></div>`).join('')}</div>
+ <div class="card"><details><summary>📖 Words you learned (${S.seen.length})</summary><dl>${S.seen.map(k=>`<dt>${TERMS[k][0]}</dt><dd>${TERMS[k][1]}</dd>`).join('')}</dl></details></div>
+ <div class="card"><h3>🔒 Your 90-day roadmap</h3><p class="muted" style="margin:6px 0 0">A personalized plan for ${T.n}: what to study, which programs to look at, and how to fund it.</p>
+ <div class="locked"><ul><li>Weeks 1 to 2: Shadow and research your path</li><li>Weeks 3 to 6: Prerequisites and program shortlist</li><li>Weeks 7 to 12: Apply, fund and prepare</li></ul><div class="lock">🔒 Premium</div></div>${premium}</div>
+ ${sp.url?`<div class="card sp"><p class="small" style="margin:0 0 6px">Sponsored</p><h3>${sp.name}</h3><p class="muted">${sp.pitch}</p><a class="btn ghost block" href="${sp.url}" target="_blank" rel="noopener">Learn more</a></div>`:''}
+ ${aff.length?`<div class="card aff"><h3>Gear up for your journey</h3>${aff.map(a=>`<a href="${a.url}" target="_blank" rel="noopener sponsored">${a.label}</a>`).join('')}<p class="small">Some links are affiliate links. We may earn a commission at no cost to you.</p></div>`:''}`;
+ setTimeout(()=>document.querySelectorAll('.row .b i').forEach(i=>i.style.width=i.dataset.w+'%'),60);
+ confetti();
+ app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{app.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));$('panel').textContent=T.opp[b.dataset.k]});
+ $('again').onclick=start;$('menu').onclick=home;$('tomap').onclick=mapV;
+ const w=$('wait');if(w)w.onclick=()=>toast('Premium roadmaps are launching soon. Thanks for your interest!');
+ $('share').onclick=async()=>{const txt=`I'm ${T.n} ${T.e} with a Nurse IQ of ${S.iq}/${TQ.length} on ${BRAND}! 🚪 Can you beat me?`;
+  try{if(navigator.share){await navigator.share({title:BRAND,text:txt,url:location.href});return}}catch(e){return}
+  try{await navigator.clipboard.writeText(txt+' '+location.href);toast('Copied! Paste it anywhere to share.')}catch(e){toast(txt)}};
+}
+/* ===== THE HALLWAY ===== */
+const LVX=[0,80,220,380,560,760,960,1180];
+const LVN=["Novice Student","Student Nurse","Graduate Nurse","Staff Nurse","Senior Nurse","Specialist","Nurse Leader","Nurse Innovator"];
+const DOORS=[
+{id:"class",e:"🎓",n:"Nursing School Classroom",lv:1,d:"Where every nurse starts: the basics of safe, caring practice.",o:"Every path starts here: clinical practice, teaching, research and leadership all build on these basics.",pz:[
+ {t:"c",q:"Before touching a patient, what is the most effective way to prevent spreading infection?",a:["Clean your hands with soap and water or hand rub","Wear perfume","Put on a mask only","Skip it if you're in a hurry"],x:"Hand hygiene is one of the most effective ways to prevent infections, and the World Health Organization promotes it worldwide."},
+ {t:"o",q:"Put the nursing process in order.",a:["Assess","Diagnose","Plan","Implement","Evaluate"],x:"Assess, diagnose, plan, implement, evaluate (ADPIE) is a widely taught framework. Names vary slightly between countries."},
+ {t:"c",q:"Pulse, breathing rate, temperature, blood pressure and oxygen level are called…",a:["Vital signs","Care plans","Handovers","Lab results"],x:"Vital signs give a quick picture of how a patient's body is coping, and nurses check them often."}]},
+{id:"peds",e:"🧸",n:"The Pediatric Door",lv:2,d:"Care for babies, children and teens, and support their families.",o:"Children's wards, neonatal care, child health education, pediatric research, unit leadership and kid-friendly health tech.",pz:[
+ {t:"c",q:"A toddler is scared before a procedure. What usually helps most?",a:["Use simple words and let them see or play with the equipment when safe","Use medical words so they sound brave","Promise it won't hurt without knowing","Do it quickly without telling them"],x:"Children cope better with honest, age-appropriate explanations and play. Avoid promising there will be no pain."},
+ {t:"c",q:"Why do pediatric teams often check a child's weight?",a:["Many treatments and doses are based on weight","To plan visiting hours","It isn't important","To pick a bed color"],x:"Children's treatments are often calculated using weight, so accurate measurements matter."}]},
+{id:"er",e:"🚑",n:"The Emergency Door",lv:2,d:"Fast, unpredictable care for urgent problems of every kind.",o:"Emergency and trauma nursing, emergency care teaching, injury research, department leadership and triage technology.",pz:[
+ {t:"o",q:"Put the ABCDE emergency assessment in order.",a:["Airway","Breathing","Circulation","Disability (neuro check)","Exposure (full check)"],x:"ABCDE helps teams find and fix the most life-threatening problems first. Many countries teach this approach."},
+ {t:"c",q:"Four patients arrive. Who needs care first?",a:["A patient struggling to breathe with blue lips","A patient with a sprained ankle who has waited longest","A patient with a mild rash","A patient who wants a medicine refill"],x:"Triage puts life-threatening problems first, not simply who arrived first."}]},
+{id:"comm",e:"🏘️",n:"The Community Health Door",lv:3,d:"Keep whole neighborhoods healthy through prevention and education.",o:"Public health and school nursing, health education, population research, program leadership and mobile health tools.",pz:[
+ {t:"c",q:"Which is an example of primary prevention?",a:["A vaccination campaign","Surgery after a heart attack","Rehab after a stroke","Treatment of advanced disease"],x:"Primary prevention stops illness before it starts, for example through vaccines, clean water and education."},
+ {t:"c",q:"Many local children miss school with asthma attacks. What is a strong next step?",a:["Gather data and work with local health and environment teams","Ignore it","Tell families to move away","Hand out random medicines"],x:"Public health nurses use data and partnerships to find causes and fix them at community level."}]},
+{id:"mind",e:"🧠",n:"The Mental Health Door",lv:3,d:"Support people through mental health challenges and recovery.",o:"Inpatient and community mental health, therapy training, recovery research, service leadership and digital mental health tools.",pz:[
+ {t:"c",q:"A patient is very anxious and agitated. What usually helps first?",a:["Speak calmly, give space and listen","Raise your voice to take control","Argue with their beliefs","Leave them alone right away"],x:"De-escalation uses calm communication, respect and safety. It often works better than force."},
+ {t:"c",q:"A patient says they are thinking about harming themselves. What is the right approach?",a:["Take it seriously, stay with them and follow your unit's safety process to get help","Promise to keep it secret","Change the subject","Wait to see if it passes"],x:"Never keep this secret. Staying with the person and escalating through your workplace's safety process is the safe response."}]},
+{id:"icu",e:"🫀",n:"The ICU Door",lv:4,d:"Care for the sickest patients with advanced monitoring and equipment.",o:"Critical care nursing, critical care education, sepsis and safety research, unit leadership and monitoring technology.",pz:[
+ {t:"c",q:"Why do critical care nurses watch trends, not just single readings?",a:["A pattern can show a patient is getting worse before one number looks alarming","Single readings never matter","Monitors are always wrong","To fill the chart"],x:"Early warning often shows up as a trend, such as a slowly rising heart rate."},
+ {t:"o",q:"Put SBAR in order when calling a doctor about a worsening patient.",a:["Situation","Background","Assessment","Recommendation"],x:"SBAR keeps urgent communication short and clear."}]},
+{id:"or",e:"🧤",n:"The Operating Room Door",lv:4,d:"Prepare patients, assist surgeons and keep the sterile field safe.",o:"Operating theater nursing, perioperative teaching, surgical safety research, theater management and instrument-tracking tools.",pz:[
+ {t:"c",q:"Why do operating teams do a 'time-out' before surgery?",a:["To confirm the right patient, procedure and site","To take a break","To check the music","To count the staff"],x:"A pause to confirm key details helps prevent serious errors. The WHO Surgical Safety Checklist supports it."},
+ {t:"c",q:"What is a sterile field?",a:["An area kept free of germs for a procedure","Any clean-looking table","The waiting room","A storage cupboard"],x:"Sterile means free of living germs. Teams protect the field and speak up if it's touched."}]},
+{id:"flight",e:"✈️",n:"The Flight Nurse Door",lv:5,d:"Provide urgent care during air and ground transport.",o:"Flight and transport nursing, transport team training, transport research, team leadership and in-flight care technology.",pz:[
+ {t:"c",q:"Transport nurses work in tight spaces. What matters most for safety?",a:["Clear briefings, checklists and calm teamwork","Working silently alone","Skipping briefings to save time","Relying on memory only"],x:"Checklists and clear communication reduce errors, especially in cramped, noisy spaces."},
+ {t:"c",q:"Before a patient transfer, what should be confirmed?",a:["The patient's condition, equipment and handover plan","The snack list","The patient's favorite song","Nothing, just go"],x:"A safe transfer needs a stable plan, working equipment and a clear handover to the receiving team."}]},
+{id:"edu",e:"📚",n:"The Education Door",lv:5,d:"Teach nursing students, colleagues, patients and communities.",o:"Nurse lecturer, clinical educator, simulation educator, patient and community educator, curriculum design and online learning.",pz:[
+ {t:"c",q:"A new nurse is struggling with a skill. What is a good teaching approach?",a:["Demonstrate it, let them practice with feedback, then let them lead step by step","Tell them to figure it out alone","Do it for them every time","Criticize mistakes in front of the team"],x:"Show, practice, feedback and gradual independence is a proven way to build skills and confidence."},
+ {t:"m",q:"Adults learn best only by listening to long lectures.",a:false,x:"Adults learn well through practice, real examples and active participation."},
+ {t:"x",q:"Match each teaching term.",a:[["Preceptor","Guides a new nurse at the bedside"],["Simulation","Realistic practice in a safe setting"],["Curriculum","The planned content of a course"],["Competency","The skills and knowledge needed to do a task safely"]],x:"Educators design learning so nurses are safe and confident."},
+ {t:"o",q:"Put a simple teach-back conversation in order.",a:["Explain in plain words","Ask them to explain it back","Clarify anything they missed","Check again and agree the next steps"],x:"Teach-back confirms the patient truly understood and keeps the responsibility on the teacher to explain clearly."},
+ {t:"c",q:"A patient with diabetes seems overwhelmed by instructions. What helps most?",a:["Focus on one or two key steps and use pictures or a demonstration","Give a long handout and leave","Use medical terms","Say 'just follow the instructions'"],x:"People remember less when overloaded. Short steps, visuals and teach-back work better."}]},
+{id:"research",e:"🔬",n:"The Research Nurse Door",lv:6,d:"Help test new treatments and improve care with evidence.",o:"Clinical trial nursing, research training, evidence studies, research team leadership and new care methods.",pz:[
+ {t:"c",q:"What must patients give before joining a clinical trial?",a:["Informed consent","A payment","A referral letter only","Nothing"],x:"Voluntary informed consent is a core ethical rule: people must understand the study and agree freely."},
+ {t:"c",q:"Why do studies use a control group?",a:["To compare results with and without the treatment","To save money","To avoid ethics review","To make the study shorter"],x:"A control group helps show whether a treatment really made the difference."}]},
+{id:"policy",e:"🏛️",n:"The Policy Door",lv:7,d:"Shape the laws, standards and systems that affect nurses and patients.",o:"Health policy advisor, government chief nurse, regulator and council roles, association and union advocacy, global health policy and workforce planning.",pz:[
+ {t:"c",q:"What is the main job of a national nursing regulator or council?",a:["Protect the public by setting standards and registering nurses","Hire nurses for hospitals","Set hospital menus","Run pharmacies"],x:"Regulators set education and practice standards, register nurses and act when care falls short. Names differ by country."},
+ {t:"m",q:"Nurses can't influence health policy unless they become politicians.",a:false,x:"Nurses influence policy through associations, advisory roles, research and by sharing real patient experiences."},
+ {t:"x",q:"Match each policy term.",a:[["Policy","A plan or rule that guides decisions"],["Advocacy","Speaking up for change on behalf of others"],["Workforce planning","Working out how many nurses are needed and where"],["Scope of practice","What a nurse is legally allowed to do"]],x:"Policy work turns patient and nurse experience into rules and plans."},
+ {t:"o",q:"Put a simple advocacy process in order.",a:["Identify the problem with evidence","Build a coalition of supporters","Share your message with decision-makers","Follow up and measure change"],x:"Evidence, allies, a clear message and follow-up make advocacy more effective."},
+ {t:"c",q:"Hospitals in your region keep losing nurses because of unsafe staffing. What can a policy-minded nurse do?",a:["Gather data and work with associations to push for safe staffing standards","Complain only to friends","Accept it as normal","Quit nursing silently"],x:"Data plus collective action is how many staffing standards and laws have been won."}]},
+{id:"lead",e:"👑",n:"The Leadership Door",lv:7,d:"Lead teams, shape policy and make workplaces safer for nurses and patients.",o:"Nurse manager, director and chief nursing officer roles, plus policy, mentoring and workforce research.",pz:[
+ {t:"c",q:"Staff are exhausted and short-staffed. What is a strong first step for a manager?",a:["Listen to staff, review workload data and escalate for support","Tell staff to be tougher","Hide the problem","Add extra tasks"],x:"Good leaders look at workload and systems first. Burnout is usually about conditions, not weakness."},
+ {t:"c",q:"What does safe delegation mean?",a:["Assigning tasks to the right person while staying accountable for oversight","Passing off all your work","Ignoring tasks","Doing everything yourself"],x:"You can hand over tasks, but you remain responsible for making sure they are done safely."}]},
+{id:"innov",e:"💡",n:"The Innovation Lab Door",lv:8,d:"Design the tools, apps and systems that will change nursing.",o:"Health tech design, digital health startups, nursing informatics, AI tools for nurses and innovation research.",pz:[
+ {t:"c",q:"What is the best first step when designing a health app for nurses?",a:["Talk to nurses and watch their real workflow","Choose colors","Buy servers","Launch first and fix later"],x:"Great tools start with real users' problems."},
+ {t:"c",q:"Before a new tool is used with patients, it should be…",a:["Tested for safety and privacy","Released immediately","Used only if cheap","Hidden from staff"],x:"Health technology needs testing, privacy protection and approval from your organization."}]}
+];
+const EXTRA={
+class:[
+ {t:"m",q:"Nurses only need to clean their hands if they can see dirt.",a:false,x:"Hands can carry germs even when they look clean. Hand hygiene is needed at key moments, such as before and after touching a patient."},
+ {t:"x",q:"Match each core idea to its meaning.",a:[["Consent","A patient's informed agreement to care"],["Confidentiality","Keeping patient information private"],["Advocacy","Speaking up for a patient's needs and rights"],["Hygiene","Habits that keep you and others clean and healthy"]],x:"These ideas guide nurses everywhere: respect, privacy, informed choice and speaking up."},
+ {t:"c",q:"You realize you made a medication mistake. What should you do?",a:["Tell your supervisor right away and help keep the patient safe","Hide it and hope no one notices","Blame a colleague","Wait until your shift ends"],x:"Speaking up fast protects the patient. Safe workplaces treat mistakes as chances to fix the system."}],
+peds:[
+ {t:"m",q:"Children are just small adults, so they need the same care and doses.",a:false,x:"Children's bodies and needs are different. Care and doses are adjusted for age and weight."},
+ {t:"x",q:"Match each age group to a helpful approach.",a:[["Infant","Gentle holding, a soothing voice and involving parents"],["Toddler","Simple words, play and small choices"],["School-age child","Step-by-step explanations and honest answers"],["Teenager","Respect privacy and include them in decisions"]],x:"Good pediatric care matches the child's age and stage of development."},
+ {t:"c",q:"A child has a high temperature and is unusually sleepy and hard to wake. What should the nurse do?",a:["Report it to the team urgently","Wait an hour and see","Let them sleep it off","Offer a sweet drink only"],x:"Unusual sleepiness with fever can be serious, so nurses escalate quickly and follow local clinical guidelines."}],
+er:[
+ {t:"m",q:"In an emergency department, patients are always seen in the order they arrive.",a:false,x:"Triage means the most urgent patients are seen first, whatever time they arrived."},
+ {t:"x",q:"Match each emergency term.",a:[["Triage","Sorting patients by urgency"],["Trauma","Serious injury from an accident or violence"],["Resuscitation","Efforts to restore breathing or circulation"],["Handover","Passing key patient information to the next team"]],x:"These words come up every shift in emergency care."},
+ {t:"o",q:"Someone collapses and doesn't respond. Put the basic life support steps in order.",a:["Check the area is safe","Check for a response and call for help","Check breathing","Start chest compressions if not breathing normally"],x:"Resuscitation councils teach safety first, then response, help, breathing check and CPR. Take a certified local course to learn the real technique."}],
+comm:[
+ {t:"m",q:"Public health nurses only work inside hospitals.",a:false,x:"They work in homes, schools, clinics, workplaces and whole communities."},
+ {t:"x",q:"Match each public health term.",a:[["Vaccination","Protects people from infectious diseases"],["Screening","Checking for disease before symptoms appear"],["Health education","Teaching people to protect their own health"],["Outbreak","A sudden rise in cases of a disease"]],x:"Prevention is the heart of community health nursing."},
+ {t:"c",q:"A village has no clean drinking water and many children have diarrhea. What helps most?",a:["Work with the community and local authorities to improve safe water and hygiene","Give everyone random medicines","Tell families to stay indoors","Do nothing until cases drop"],x:"Clean water and handwashing prevent many illnesses. Community nurses often lead this kind of prevention."}],
+mind:[
+ {t:"m",q:"Mental health conditions are rare and affect only a few people.",a:false,x:"They are common worldwide. The WHO estimates that around one in eight people live with one."},
+ {t:"x",q:"Match each mental health nursing term.",a:[["Active listening","Giving full attention and reflecting back what you hear"],["De-escalation","Calming a tense situation without force"],["Recovery","Building a meaningful life despite illness"],["Stigma","Unfair negative attitudes about a group"]],x:"These ideas shape respectful, effective mental health care."},
+ {t:"c",q:"A patient with depression says they feel worthless. What helps most?",a:["Listen, show you care and don't dismiss their feelings","Tell them to cheer up","Say that others have it worse","Change the topic quickly"],x:"Feeling heard matters. Brushing feelings off can make people feel more alone. Teams also assess safety and plan care together."}],
+icu:[
+ {t:"m",q:"ICU nurses usually care for many patients at once, like a general ward.",a:false,x:"ICU nurses usually care for only one or two patients because care is so intensive. Ratios vary by country."},
+ {t:"x",q:"Match each ICU term.",a:[["Ventilator","Machine that helps a patient breathe"],["IV line","Tube that delivers fluids or medicine into a vein"],["Monitor","Screen showing heart rate and other readings"],["Sedation","Medicine that keeps a patient calm or asleep"]],x:"Critical care uses a lot of equipment, and nurses are the ones watching it all."},
+ {t:"c",q:"A patient's blood pressure has slowly dropped and heart rate has risen over two hours. What should the nurse do?",a:["Report the trend and ask for a review","Wait for an alarm","Turn the alarm off","Wait for the next shift"],x:"Trends can signal serious problems early. Speaking up early saves lives."}],
+or:[
+ {t:"m",q:"Everyone in the operating room can touch sterile instruments freely.",a:false,x:"Only team members who are scrubbed and gowned handle sterile items."},
+ {t:"x",q:"Match each operating room role.",a:[["Scrub nurse","Passes instruments and protects the sterile field"],["Circulating nurse","Manages the room, supplies and paperwork"],["Anesthetist","Keeps the patient asleep and stable"],["Surgeon","Performs the operation"]],x:"Surgery is teamwork, and each role protects the patient in a different way."},
+ {t:"o",q:"Put a safe surgery day in order.",a:["Confirm patient identity and consent","Do the pre-operative checks","Surgical time-out","Operation and instrument counts","Hand over to recovery"],x:"Each step is a safety checkpoint. Counts help make sure nothing is left inside a patient."}],
+flight:[
+ {t:"m",q:"Flight nurses work alone with no team.",a:false,x:"Transport care is teamwork, often with paramedics, pilots and doctors."},
+ {t:"x",q:"Match each transport term.",a:[["Handover","Passing patient details to the receiving team"],["Stabilize","Make a patient safe enough to travel"],["Altitude","Height that can affect oxygen and equipment"],["Safety briefing","Team talk about roles and risks before moving"]],x:"Preparation is what keeps transport patients safe."},
+ {t:"c",q:"Why can altitude matter for a patient on a flight?",a:["Lower air pressure can change oxygen levels and gas in the body","It makes patients hungry","It improves all medicines","It has no effect"],x:"There is less oxygen available at altitude, so teams plan oxygen and monitor closely."}],
+research:[
+ {t:"m",q:"If something is popular online, it must be backed by good evidence.",a:false,x:"Popularity isn't proof. Good evidence comes from well-designed studies."},
+ {t:"x",q:"Match each research term.",a:[["Hypothesis","A testable idea about what will happen"],["Sample","The group of people studied"],["Bias","Anything that unfairly skews results"],["Evidence-based practice","Care guided by research, experience and patient values"]],x:"Research nurses help turn questions into reliable answers."},
+ {t:"c",q:"A study has only 5 participants and no comparison group. What should you think?",a:["It's too small to be sure, so look for stronger evidence","It proves the treatment works","It's perfect","Sample size never matters"],x:"Larger, well-designed studies give more reliable results."}],
+lead:[
+ {t:"m",q:"A good leader makes every decision alone, without input.",a:false,x:"Strong leaders listen, involve their teams and then decide."},
+ {t:"x",q:"Match each leadership word.",a:[["Mentoring","Guiding a less experienced colleague"],["Delegation","Assigning tasks to the right person"],["Advocacy","Speaking up for patients and staff"],["Burnout","Long-term work stress causing exhaustion and cynicism"]],x:"These skills help leaders build safe, supportive workplaces."},
+ {t:"o",q:"Put a simple team problem-solving approach in order.",a:["Listen and gather facts","Agree on the real problem","Try a small change","Review what worked"],x:"Listening first and testing small changes helps teams improve without blame."}],
+innov:[
+ {t:"m",q:"Technology will replace nurses' judgment and compassion.",a:false,x:"Technology can support nurses, but human judgment and compassion remain essential."},
+ {t:"x",q:"Match each innovation term.",a:[["Prototype","An early model to test an idea"],["Usability","How easy a tool is to use"],["Privacy","Protecting people's personal information"],["Feedback","Input from real users to improve a tool"]],x:"Good innovation is built with users, not just for them."},
+ {t:"c",q:"A nurse has an idea to reduce paperwork. What is a smart first step?",a:["Describe the problem, talk to colleagues and test a small version","Quit nursing","Build a huge system alone","Wait for someone else"],x:"Many nursing innovations began with a nurse fixing a daily problem."}]
+};
+DOORS.forEach(d=>d.pz.push(...(EXTRA[d.id]||[])));
+const POLD={class:"Policy: nurse education standards and licensing rules shape every nurse's start.",peds:"Policy: child health programs, immunization and child protection advocacy.",er:"Policy: emergency care systems, disaster preparedness and injury prevention.",comm:"Policy: public health laws, health equity programs and NGO advocacy.",mind:"Policy: mental health legislation, anti-stigma campaigns and crisis service planning.",icu:"Policy: critical care staffing standards and patient safety regulation.",or:"Policy: surgical safety standards and infection prevention guidelines.",flight:"Policy: transport safety standards and emergency response planning.",edu:"Policy: curriculum standards, workforce planning and education funding.",research:"Policy: turning evidence into guidelines and research ethics rules.",policy:"This whole door is policy: advising governments, regulators, unions and global health groups.",lead:"Policy: workforce standards, staffing rules and professional association leadership.",innov:"Policy: rules for digital health, privacy and safe use of AI."};
+DOORS.forEach(d=>{d.o+=' '+(POLD[d.id]||'')});
+let H={xp:0,solved:{},stars:{},cleared:{}},R={i:0,p:0,mis:0,pm:0,st:0},up=0,lastType=null;
+try{const x=JSON.parse(localStorage.getItem('nd_hall2')||'null');if(x)H=Object.assign(H,x)}catch(e){}
+const saveH=()=>{try{localStorage.setItem('nd_hall2',JSON.stringify(H))}catch(e){}};
+const lvOf=xp=>{let l=1;LVX.forEach((x,i)=>{if(xp>=x)l=i+1});return l};
+function award(n){const b=lvOf(H.xp);H.xp+=n;const a=lvOf(H.xp);if(a>b)up=a;saveH()}
+function hall(){
+ clearInterval(timer);
+ let ban='';
+ if(up){const nd=DOORS.filter(d=>d.lv===up);ban=`<div class="card res"><div class="big">🎉</div><h2>Level ${up}: ${LVN[up-1]}</h2><p style="margin:6px 0 0">${nd.length?'New doors unlocked: '+nd.map(d=>d.e+' '+d.n).join(', '):'Keep going!'}</p></div>`;up=0;setTimeout(confetti,200)}
+ const L=lvOf(H.xp),nx=LVX[L];
+ const pct=nx!==undefined?(H.xp-LVX[L-1])/(nx-LVX[L-1])*100:100;
+ app.innerHTML=`<button class="back" id="bk">← Menu</button>${ban}
+ <div class="card"><div class="hud"><span>Level ${L} · ${LVN[L-1]}</span><span>⭐ ${H.xp} XP</span></div><div class="prog"><i style="width:${pct}%"></i></div><p class="muted" style="margin:6px 0 0">${nx!==undefined?(nx-H.xp)+' XP to Level '+(L+1):'Max level! You opened every door.'}</p></div>
+ ${H.xp===0?`<div class="ins">🏥 You're a novice student in a huge hospital hallway. Only the Classroom door is open. Solve puzzles to earn XP, level up and unlock new career doors. No nursing experience needed: every answer is explained.</div>`:''}
+ <div class="hall">${DOORS.map((d,i)=>{const op=L>=d.lv;return `<button class="door ${op?'open':'locked'}" data-i="${i}"><span class="knob"></span><span class="de">${op?d.e:'🔒'}</span><b>${d.n}</b><small>${op?(H.cleared[d.id]?'⭐'.repeat(H.stars[d.id]||1)+' Cleared':'Open'):'Level '+d.lv}</small></button>`}).join('')}</div>
+ <p class="small">Progress saves on this device. New to nursing words? <button class="link" id="jb">Open the Jargon Buster</button> · <button class="link" id="rs">Reset progress</button></p>`;
+ $('bk').onclick=home;
+ $('jb').onclick=()=>{gt='jar';beginV()};app.querySelectorAll('.door').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,d=DOORS[i];if(lvOf(H.xp)<d.lv)return toast('Locked: reach Level '+d.lv+' to open this door');room(i)});
+ let rc=0;$('rs').onclick=()=>{if(!rc){rc=1;$('rs').textContent='Tap again to reset everything';return}H={xp:0,solved:{},stars:{},cleared:{}};saveH();hall()};
+}
+function room(i){
+ const D=DOORS[i];
+ app.innerHTML=`<button class="back" id="bk">← Hallway</button><div class="card res"><div class="big">${D.e}</div><h2>${D.n}</h2><p>${D.d}</p>
+ <p class="muted">${D.pz.length} puzzles · up to 25 XP each${H.cleared[D.id]?' · Cleared '+'⭐'.repeat(H.stars[D.id]||1):''}</p>
+ <button class="btn block" id="go">${H.cleared[D.id]?'Replay for more stars':'Open the door'}</button></div>`;
+ $('bk').onclick=hall;$('go').onclick=()=>{R={i,p:0,mis:0,pm:0,st:0};puzzle()};
+}
+function puzzle(){
+ const D=DOORS[R.i],Z=D.pz[R.p];
+ if(!Z)return done();
+ const head=`<div class="hud"><span>${D.e} ${D.n}</span><span>${R.p+1}/${D.pz.length}</span></div><div class="prog"><i style="width:${R.p/D.pz.length*100}%"></i></div>`;
+ R.pm=0;({c:cPuz,o:oPuz,m:mPuz,x:xPuz})[Z.t](head,D,Z);
+}
+function solved(D){const k=D.id+'.'+R.p;R.st=R.pm===0?(R.st||0)+1:0;if(!H.solved[k]){H.solved[k]=1;award(R.pm===0?25:20)}}
+function after(D,Z){
+ $('fb').innerHTML=`${R.st>1?`<p style="margin:10px 0 0;font-weight:700">🔥 Combo x${R.st}!</p>`:''}<div class="ins">✅ 💡 ${Z.x}</div><button class="btn block" id="nx">${R.p+1>=D.pz.length?'Finish room':'Next puzzle'}</button>`;
+ $('nx').onclick=()=>{R.p++;puzzle()};
+}
+function cPuz(head,D,Z){
+ const list=shuffle(Z.a.map((t,n)=>({t,c:n===0})));
+ app.innerHTML=head+`<div class="card"><span class="tag">Puzzle</span><div class="q">${Z.q}</div>${list.map((o,n)=>`<button class="opt" data-n="${n}">${o.t}</button>`).join('')}<div id="fb"></div></div>`;
+ const bs=[...app.querySelectorAll('.opt')];let fin=false;
+ bs.forEach((b,n)=>b.onclick=()=>{if(fin)return;
+  if(list[n].c){fin=true;b.classList.add('ok');bs.forEach(x=>x.disabled=!x.classList.contains('ok'));solved(D);after(D,Z)}
+  else{miss();b.classList.add('bad');b.disabled=true;toast('Not quite. Try again!')}});
+}
+function oPuz(head,D,Z){
+ const items=shuffle(Z.a.map((t,n)=>({t,n})));let seq=[];
+ const draw=()=>{
+  app.innerHTML=head+`<div class="card"><span class="tag">Sequence puzzle</span><div class="q">${Z.q}</div><p class="muted" style="margin:0">Tap the steps in the right order.</p>
+  <div class="seq">${seq.map(n=>`<span>${Z.a[n]}</span>`).join('')}</div>
+  ${items.map(o=>`<button class="opt" data-n="${o.n}" ${seq.includes(o.n)?'disabled':''}>${o.t}</button>`).join('')}
+  <button class="btn ghost block" id="rs2">Reset</button><div id="fb"></div></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{seq.push(+b.dataset.n);if(seq.length<Z.a.length)return draw();
+   if(seq.every((n,k)=>n===k)){draw();app.querySelectorAll('.opt,#rs2').forEach(x=>x.disabled=true);solved(D);after(D,Z)}
+   else{miss();seq=[];toast('Not quite. Try again!');draw()}});
+  $('rs2').onclick=()=>{seq=[];draw()};
+ };draw();
+}
+function miss(){R.mis++;R.pm++}
+function mPuz(head,D,Z){
+ app.innerHTML=head+`<div class="card"><span class="tag">Myth or fact?</span><div class="q">${Z.q}</div><div class="mf"><button class="opt" data-v="0">❌ Myth</button><button class="opt" data-v="1">✅ Fact</button></div><div id="fb"></div></div>`;
+ const bs=[...app.querySelectorAll('.opt')];let fin=false;
+ bs.forEach(b=>b.onclick=()=>{if(fin)return;
+  if((b.dataset.v==='1')===Z.a){fin=true;b.classList.add('ok');bs.forEach(x=>x.disabled=!x.classList.contains('ok'));solved(D);after(D,Z)}
+  else{miss();b.classList.add('bad');b.disabled=true;toast('Not quite. Try the other one!')}});
+}
+function xPuz(head,D,Z){
+ const Lf=Z.a.map((p,n)=>({t:p[0],n})),Rt=shuffle(Z.a.map((p,n)=>({t:p[1],n})));
+ let sel=null;const ok=new Set();
+ const draw=()=>{
+  app.innerHTML=head+`<div class="card"><span class="tag">Match-up</span><div class="q">${Z.q}</div><p class="muted" style="margin:0 0 8px">Tap a term, then its match.</p>
+  <div class="mx"><div>${Lf.map(o=>`<button class="opt ${ok.has(o.n)?'ok':sel===o.n?'picked':''}" data-s="l" data-n="${o.n}" ${ok.has(o.n)?'disabled':''}>${o.t}</button>`).join('')}</div>
+  <div>${Rt.map(o=>`<button class="opt ${ok.has(o.n)?'ok':''}" data-s="r" data-n="${o.n}" ${ok.has(o.n)?'disabled':''}>${o.t}</button>`).join('')}</div></div><div id="fb"></div></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const n=+b.dataset.n;
+   if(b.dataset.s==='l'){sel=n;return draw()}
+   if(sel===null)return toast('Pick a term first');
+   if(sel===n){ok.add(n);sel=null;draw();
+    if(ok.size===Z.a.length){app.querySelectorAll('.opt').forEach(x=>x.disabled=true);solved(D);after(D,Z)}}
+   else{miss();sel=null;toast('Not a match. Try again!');draw()}});
+ };draw();
+}
+function done(){
+ const D=DOORS[R.i],st=R.mis===0?3:R.mis<=2?2:1,first=!H.cleared[D.id];
+ H.cleared[D.id]=1;H.stars[D.id]=Math.max(H.stars[D.id]||0,st);if(first)award(25);saveH();
+ app.innerHTML=`<div class="card res"><div class="big">${D.e}</div><h2>Room cleared!</h2><p style="font-size:1.6rem;margin:4px 0">${'⭐'.repeat(st)}</p>${first?'<p class="muted">+25 XP room bonus</p>':''}
+ <div class="ins" style="text-align:left">🌍 <b>Opportunities here:</b> ${D.o}</div><button class="btn block" id="bk2">Back to the hallway</button></div>`;
+ $('bk2').onclick=hall;
+}
+/* ===== STAY STRONG (burnout) ===== */
+const BL={ER:"Emergency & trauma",ICU:"Critical care",PEDS:"Pediatrics",BIRTH:"Maternity & birth",MIND:"Mental health",COMM:"Community & public health",SYS:"Navigation, education & informatics",OR:"Operating theater"};
+const BF={
+ER:{p:["Unpredictable surges and long waits for beds","Frequent exposure to trauma, aggression and loss"],s:["Dreading shifts or feeling on edge before you arrive","Replaying difficult cases after work","A short temper with patients or teammates"],t:["Join or ask for debriefs after traumatic cases","Protect sleep after night shifts with a fixed wind-down routine","Take real breaks away from the department, even short ones","Explore variety: triage, fast-track, teaching or transport roles"]},
+ICU:{p:["Frequent end-of-life situations and moral distress","High-intensity workload with little downtime"],s:["Feeling numb about patient deaths","Dreading complex cases you once enjoyed","Constant fatigue that sleep doesn't fix"],t:["Use ethics rounds, debriefs and peer support","Name moral distress to a trusted colleague or manager","Build an end-of-shift ritual such as a walk, shower or music","Consider preceptor, educator or rapid response roles for variety"]},
+PEDS:{p:["Seeing children seriously ill or suffering","Supporting anxious families, sometimes in conflict"],s:["Taking cases home emotionally","Feeling cynical about families","Losing your joy in working with children"],t:["Talk through hard cases with your team or a supervisor","Notice and celebrate small wins and recoveries","Set kind but clear boundaries with families","Look at school health, community or education roles for a change of pace"]},
+BIRTH:{p:["High-stakes moments that can change quickly","Irregular hours and the weight of complications or loss"],s:["Anxiety before shifts","Feeling responsible for every outcome","Exhaustion after long labor shifts"],t:["Debrief after difficult births","Ask for fair rotations and shared workloads","Use team huddles to speak up early","Consider antenatal education or community maternity roles"]},
+MIND:{p:["Heavy emotional load and risk of aggression","Slow progress and complex social problems"],s:["Compassion fatigue: caring feels like a burden","Feeling unsafe or constantly on guard","Taking patients' distress home"],t:["Use clinical supervision or reflective practice","Keep up de-escalation and safety training","Keep clear boundaries between work and home","Mix in community, education or peer-support projects"]},
+COMM:{p:["Large caseloads with limited resources","Travel, isolation and gaps in support"],s:["Feeling that the work never ends","Feeling isolated from colleagues","Frustration with systems that block patients"],t:["Build a peer network or regular team check-ins","Negotiate caseloads and protect your off-hours","Track wins: people reached and outcomes improved","Plan variety with policy, teaching or program projects"]},
+SYS:{p:["Heavy admin load and many meetings","Feeling far from patients or caught between staff and management"],s:["Cynicism about the organization","Losing your sense of purpose","Change fatigue"],t:["Protect focus time and decline low-value meetings","Keep a link to patient care by shadowing or covering occasional shifts","Find a mentor or peer group in similar roles","Revisit your goals every few months"]},
+OR:{p:["Long cases, standing for hours and physical strain","Pressure for speed and zero mistakes"],s:["Back or foot pain and constant fatigue","Dreading high-pressure cases","Tension with team members"],t:["Use ergonomic supports and micro-stretch breaks","Speak up in briefings to reduce friction","Negotiate rotation to lighter lists when possible","Consider educator, sterile services or first-assistant roles"]}
+};
+const GEN=["Protect your sleep and take every break you're entitled to","Name one trusted person you can debrief with after hard shifts","Use your workplace's occupational health or employee support services","Raise workload, safety and scheduling concerns early, not late","Keep one thing outside nursing that recharges you, like movement, friends or a hobby","Keep learning: certificates, mentoring and new roles keep work fresh"];
+const BQ=["I feel drained at the end of most shifts, even after rest.","I feel numb, cynical or detached about my patients or my work.","I feel I'm not making a difference anymore.","I dread going to work.","My sleep or health has got worse (poor sleep, getting ill often).","I'm more irritable with coworkers, patients or family than usual."];
+const BS=["Never","Sometimes","Often","Almost always"];
+let bt='chk',bf=null,bans=[],bshow=false,picks={};
+try{picks=JSON.parse(localStorage.getItem('nd_stay')||'{}')||{}}catch(e){}
+function chkHTML(){
+ let h=`<div class="card"><h3>Burnout check-in</h3><p class="muted" style="margin:6px 0 12px">Think about the last 4 weeks. The World Health Organization describes burnout as an occupational phenomenon from long-term workplace stress: exhaustion, mental distance or cynicism about the job, and reduced effectiveness.</p>`;
+ BQ.forEach((q,i)=>{h+=`<div><b style="font-size:.95rem">${i+1}. ${q}</b><div class="scale">${BS.map((s,v)=>`<button data-q="${i}" data-v="${v}" aria-pressed="${bans[i]===v}">${s}</button>`).join('')}</div></div>`});
+ h+=`<button class="btn block" id="bsee">See my result</button></div>`;
+ if(bshow){const sc=bans.reduce((a,b)=>a+b,0);
+  const L=sc<=5?["🟢 Doing okay","Your stress looks manageable right now. Keep your good habits and check in again each month, because burnout can build slowly."]:sc<=11?["🟡 Early warning signs","Some signs of strain are showing. Try small changes this week: protect your sleep, take real breaks and talk to a trusted colleague. If it continues, raise workload concerns with your manager."]:["🔴 High strain: please take this seriously","Your answers suggest a lot of strain. Consider speaking with a doctor, a counselor, or your workplace's occupational health or employee support service soon, and tell someone you trust. Needing support is not failure."];
+  h+=`<div class="card" id="bres"><h3>${L[0]}</h3><p style="margin:8px 0">${L[1]}</p><p class="small">This is not a diagnosis. If you ever feel hopeless or think about harming yourself, contact your local emergency number or a crisis line right away, or reach out to someone you trust.</p><button class="btn ghost block" id="bpl">Build my stay plan</button></div>`}
+ return h;
+}
+function fldHTML(){
+ const F=BF[bf];
+ return `<div class="card"><h3>${TYPES[bf].e} ${BL[bf]}</h3><p class="muted" style="margin:8px 0 0"><b>Common pressures</b></p><ul class="bl">${F.p.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <p class="muted" style="margin:12px 0 0"><b>Warning signs to watch</b></p><ul class="bl">${F.s.map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div class="card"><h3>Signs in any field</h3><ul class="bl"><li>Constant exhaustion that rest doesn't fix</li><li>Feeling detached, cynical or numb</li><li>Feeling ineffective, as if nothing you do matters</li><li>Dreading work, getting ill often or sleeping badly</li></ul></div>`;
+}
+function plnHTML(){
+ const F=BF[bf],P=picks[bf]||[];
+ const all=[...F.t.map((t,i)=>[bf+i,t]),...GEN.map((t,i)=>['g'+i,t])];
+ return `<div class="card"><h3>Your stay-on-the-job plan</h3><p class="muted" style="margin:6px 0 12px">Pick up to 3 commitments to start with (${P.length}/3). They're saved on this device.</p>
+ ${all.map(([id,t])=>`<button class="chk" data-id="${id}" aria-pressed="${P.includes(id)}"><span>${P.includes(id)?'✅':'⬜'}</span><span>${t}</span></button>`).join('')}</div>
+ <div class="card"><h3>When it's time for a change</h3><p style="margin:8px 0 0;font-size:.95rem">Staying in nursing doesn't always mean staying in the same job. You can change unit, shift pattern or hours, or move into education, informatics, navigation, research or leadership. Your skills carry over, and asking for a change early is a strength.</p></div>`;
+}
+function stay(){
+ clearInterval(timer);
+ if(!bf)bf=lastType||'ER';
+ const tabs=[['chk','🩺 Check-in'],['fld','🔎 My field'],['pln','🛡️ Stay plan']];
+ const pills=bt==='chk'?'':`<div class="pills">${Object.keys(BL).map(k=>`<button data-k="${k}" aria-pressed="${k===bf}">${TYPES[k].e} ${BL[k]}</button>`).join('')}</div>`;
+ const body=bt==='chk'?chkHTML():bt==='fld'?fldHTML():plnHTML();
+ app.innerHTML=`<button class="back" id="bk">← Menu</button><h2 style="margin-bottom:6px">🛡️ Stay Strong</h2>
+ <p class="muted" style="margin:0 0 12px">Burnout is common in nursing and it's usually about workload and systems, not weakness. Spot it early and build a plan to stay in the work you love.</p>
+ <div class="tabs">${tabs.map(t=>`<button data-t="${t[0]}" aria-selected="${t[0]===bt}">${t[1]}</button>`).join('')}</div>${pills}${body}`;
+ $('bk').onclick=home;
+ app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{bt=b.dataset.t;stay()});
+ app.querySelectorAll('.pills button').forEach(b=>b.onclick=()=>{bf=b.dataset.k;stay()});
+ app.querySelectorAll('.scale button').forEach(b=>b.onclick=()=>{bans[+b.dataset.q]=+b.dataset.v;bshow=false;stay()});
+ const bs=$('bsee');if(bs)bs.onclick=()=>{if(bans.filter(x=>x!==undefined).length<BQ.length)return toast('Answer all 6 questions first');bshow=true;stay();const r=$('bres');if(r)r.scrollIntoView({behavior:'smooth'})};
+ const bp=$('bpl');if(bp)bp.onclick=()=>{bt='pln';stay();scrollTo(0,0)};
+ app.querySelectorAll('.chk').forEach(b=>b.onclick=()=>{const P=picks[bf]||(picks[bf]=[]),id=b.dataset.id,k=P.indexOf(id);
+  if(k>-1)P.splice(k,1);else if(P.length>=3)return toast('Pick up to 3 commitments');else P.push(id);
+  try{localStorage.setItem('nd_stay',JSON.stringify(picks))}catch(e){}stay()});
+}
+/* ===== CAREER MAP: all areas of practice by track ===== */
+const TR=[["c","🩺","Clinical"],["e","🎓","Education"],["r","🔬","Research"],["l","👑","Leadership"],["p","🏛️","Policy"],["i","💡","Innovation"],["s","♥","Saved"]];
+const TB={c:"Direct patient care in hospitals, communities and homes.",e:"Teaching nurses, patients and communities.",r:"Building the evidence that improves care.",l:"Leading teams, services and organizations.",p:"Shaping the laws, standards and systems that affect nurses and patients.",i:"Creating new tools, systems and ways of delivering care."};
+const MAP={
+c:[
+{g:"Hospital & acute care",i:[["Emergency & trauma","Rapid assessment and care for urgent illness and injury."],["Critical care (ICU)","Intensive care for the sickest patients."],["Medical-surgical","Broad adult care before and after surgery or illness."],["Cardiac care","Heart conditions, monitoring and rehabilitation."],["Neurology & stroke","Brain, spine and nerve conditions."],["Oncology","Cancer treatment, side-effect care and support."],["Orthopedics","Bone, joint and injury recovery."],["Renal & dialysis","Kidney disease and dialysis care."],["Respiratory care","Lung conditions and breathing support."],["Gastroenterology","Digestive health and endoscopy care."],["Diabetes & endocrine care","Managing diabetes and hormone conditions."],["Wound & burn care","Healing complex wounds and burns."],["Perioperative (operating theater)","Care before, during and after surgery."],["Pain management","Helping patients control pain safely."],["Palliative & hospice care","Comfort and dignity in serious or end-of-life illness."],["Infection prevention & control","Stopping infections from spreading in care settings."],["Transplant care","Care before and after organ transplants."]]},
+{g:"Women, children & families",i:[["Labor, delivery & postpartum","Supporting birth and the days after."],["Midwifery","Pregnancy, birth and newborn care. A separate profession in many countries."],["Neonatal (NICU)","Care for premature and sick newborns."],["Pediatrics","Care for babies, children and teens."],["School nursing","Health care and health education for students."],["Reproductive & sexual health","Contraception, fertility and sexual health services."]]},
+{g:"Mental health & older adults",i:[["Psychiatric & mental health","Care for mental illness and crisis."],["Addiction & substance use","Support for treatment and recovery."],["Geriatrics & dementia care","Care for older adults and people living with dementia."],["Rehabilitation","Helping people regain independence after illness or injury."]]},
+{g:"Community, primary & public health",i:[["Primary care / practice nursing","Check-ups, chronic conditions and prevention."],["Community & district nursing","Care in people's homes and neighborhoods."],["Public health","Prevention and health for whole populations."],["Occupational health","Keeping workers healthy and safe."],["Telehealth nursing","Remote advice, triage and monitoring by phone or video."],["Rural & remote nursing","Broad care where services are far away."],["Correctional nursing","Health care in prisons and detention settings."],["Humanitarian & disaster response","Care in crises, conflict and disasters."],["Military nursing","Care for service members, including in the field."],["Flight & transport nursing","Care during air or ground transport."],["Forensic nursing","Care and evidence collection for survivors of violence or abuse."]]},
+{g:"Advanced practice",i:[["Nurse practitioner","Diagnoses, treats and prescribes. Rules vary by country."],["Clinical nurse specialist","Specialty expert who improves care across a unit or system."],["Nurse anesthetist","Provides anesthesia where the role exists."],["Advanced midwifery","Leads maternity care in many countries."],["Nurse consultant / advanced clinician","Senior clinical expert roles. Titles vary."]]}
+],
+e:[{g:"Teach & train",i:[["Nurse lecturer / professor","Teaches nursing students at colleges and universities."],["Clinical educator","Trains staff on wards and units."],["Preceptor / mentor","Guides new nurses and students at the bedside."],["Simulation educator","Teaches with realistic practice labs."],["Staff development specialist","Plans training and career growth in hospitals."],["Patient & community educator","Teaches people to manage their own health."],["Health coach","Supports behavior change and long-term condition care."],["Curriculum designer","Builds nursing programs and e-learning."],["Online & digital educator","Teaches through virtual classrooms and apps."],["Life support & first aid instructor","Teaches CPR and emergency skills."]]}],
+r:[{g:"Build the evidence",i:[["Clinical research nurse","Runs and supports clinical trials."],["Nurse scientist","Leads research to improve nursing and patient outcomes."],["Evidence-based practice lead","Turns research into everyday practice."],["Quality improvement nurse","Tests small changes to make care better."],["Implementation scientist","Studies how to get good practice adopted."],["Health services researcher","Studies how care is organized and delivered."],["Clinical data & analytics nurse","Uses data to spot patterns and improve care."],["Academic researcher (PhD)","Leads studies and mentors new researchers."],["Global health researcher","Studies health in low- and middle-income settings."]]}],
+l:[{g:"Lead people & services",i:[["Charge nurse / team leader","Leads a shift or ward."],["Nurse manager / ward manager","Runs a unit, its staff and its budget."],["Director of nursing","Leads nursing across a service."],["Chief nursing officer","Top nursing executive in an organization."],["Quality & patient safety lead","Makes care safer across a service."],["Nurse consultant / advisor","Expert adviser to organizations and teams."],["Nurse entrepreneur","Starts clinics, agencies or health businesses."],["Professional association leader","Leads nursing bodies and unions."]]}],
+p:[{g:"Shape laws & systems",i:[["Health policy advisor","Advises governments on health laws and plans."],["Government chief nurse / ministry role","Leads nursing policy for a country or region."],["Regulator & nursing council roles","Protect the public through standards and registration."],["Association & union advocate","Speaks for nurses on pay, safety and practice."],["Public health policy","Shapes prevention programs and health laws."],["Global health policy (WHO, NGOs)","Works on international health priorities."],["Workforce planning","Plans how many nurses are needed and where."],["Health law & ethics advisor","Advises on rights, consent and professional standards."],["Health coverage & access policy","Shapes insurance, funding and who can get care."],["Community & political advocate","Speaks up for communities or runs for office."]]}],
+i:[{g:"Build the future of care",i:[["Nursing informatics","Designs and improves health records and systems."],["Digital health & telehealth","Builds remote care services."],["Health tech founder","Creates new products and companies."],["Medical device specialist","Helps design and test equipment."],["AI & data in healthcare","Shapes safe, fair use of AI tools."],["Product & UX designer for health","Designs tools nurses and patients can actually use."],["Simulation & virtual reality designer","Builds immersive training experiences."],["Clinical solutions consultant","Helps hospitals adopt new technology."],["Health innovation lead","Runs innovation labs and pilot projects."]]}]
+};
+let mt='c',mq='',msaved=[];
+try{msaved=JSON.parse(localStorage.getItem('nd_map')||'[]')||[]}catch(e){}
+function mapV(){
+ clearInterval(timer);
+ app.innerHTML=`<button class="back" id="bk">← Menu</button><h2 style="margin-bottom:6px">🗺️ Career Map</h2>
+ <p class="muted" style="margin:0 0 12px">Nursing is far more than hospital wards. Explore every area of practice under six tracks. Most nurses move between tracks over a career. Titles, training and scope vary by country, so check your national nursing council.</p>
+ <div class="tabs">${TR.map(t=>`<button data-t="${t[0]}" aria-selected="${t[0]===mt}">${t[1]} ${t[2]}${t[0]==='s'?' ('+msaved.length+')':''}</button>`).join('')}</div>
+ ${mt==='s'?'':`<p class="muted" style="margin:8px 0">${TB[mt]}</p><input class="sr" id="mq" placeholder="Search this track (e.g. ICU, school)" value="${mq.replace(/"/g,'&quot;')}">`}
+ <div id="ml"></div>`;
+ $('bk').onclick=home;
+ app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{mt=b.dataset.t;mq='';mapV()});
+ const q=$('mq');if(q)q.oninput=()=>{mq=q.value;drawMap()};
+ drawMap();
+}
+function drawMap(){
+ const l=$('ml');let h='';
+ const row=(t,n,d)=>{const k=t+'|'+n,on=msaved.includes(k);return `<div class="mi"><div><b>${n}</b><span>${d}</span></div><button class="hb" data-k="${k}" aria-pressed="${on}">${on?'♥':'♡'}</button></div>`};
+ if(mt==='s'){
+  const items=[];Object.keys(MAP).forEach(t=>MAP[t].forEach(g=>g.i.forEach(([n,d])=>{if(msaved.includes(t+'|'+n))items.push(row(t,n,d))})));
+  h=items.length?items.join(''):`<div class="card"><p style="margin:0">Nothing saved yet. Tap ♡ on any area to build your own shortlist.</p></div>`;
+ }else{
+  const q=mq.trim().toLowerCase();
+  MAP[mt].forEach(g=>{const it=g.i.filter(([n,d])=>!q||(n+' '+d).toLowerCase().includes(q));if(it.length)h+=`<h4 class="gh">${g.g}</h4>`+it.map(([n,d])=>row(mt,n,d)).join('')});
+  if(!h)h=`<p class="muted">No matches. Try another word.</p>`;
+ }
+ l.innerHTML=h;
+ l.querySelectorAll('.hb').forEach(b=>b.onclick=()=>{const k=b.dataset.k,i=msaved.indexOf(k);if(i>-1)msaved.splice(i,1);else msaved.push(k);
+  try{localStorage.setItem('nd_map',JSON.stringify(msaved))}catch(e){}
+  if(mt==='s')return mapV();
+  const on=msaved.includes(k);b.setAttribute('aria-pressed',on);b.textContent=on?'♥':'♡';
+  const tb=app.querySelector('.tabs button[data-t="s"]');if(tb)tb.textContent='♥ Saved ('+msaved.length+')'});
+}
+/* ===== START HERE: for people with no nursing experience ===== */
+const RC=[
+["You need healthcare experience before you can apply to nursing school.",false,"In most places you don't. Entry rules vary by country, and some programs want science or math prerequisites, but starting from zero is common."],
+["Nurses must be completely unbothered by blood and body fluids.",false,"Many nurses felt nervous at first. Comfort builds with training and practice, and many nursing roles involve little blood."],
+["Nurses just follow doctors' orders.",false,"Nurses assess patients, make care decisions within their scope, teach, coordinate care and speak up for patients."],
+["Nursing jobs exist only in hospitals.",false,"Nurses work in clinics, schools, homes, communities, universities, research centers, tech companies and government."],
+["You have to be a science genius to become a nurse.",false,"You'll learn the science in your program. Communication, observation, teamwork and persistence matter just as much."],
+["Many people become nurses as a second career, at many different ages.",true,"Career changers are common. Some programs are designed for people who already have another degree or work experience."],
+["Nurses can move between specialties and tracks during a career.",true,"You might start at the bedside and later move into teaching, research, leadership, policy or technology."],
+["Looking after yourself is part of being a good nurse.",true,"Nursing can be demanding. Sleep, support and boundaries help nurses stay well and stay in the job."]
+];
+const FQ=[
+{q:"Why does nursing interest you?",o:[["I like helping people directly",["care"]],["A stable career with many options",["practical"]],["I'm curious about health and the body",["curious"]],["Someone or something inspired me",["care"]]]},
+{q:"A friend is upset. You usually…",o:[["Listen and stay with them",["care","calm"]],["Help find a practical solution",["practical","team"]],["Feel nervous but try to help",["care"]]]},
+{q:"How do you feel about science subjects like biology?",o:[["I enjoy them",["curious"]],["Fine, if I have time to learn",["learn"]],["I'm worried I'm not good at them",["scienceWorry"]]]},
+{q:"How would you handle blood, injuries or medical situations?",o:[["Pretty calmly",["calm"]],["A bit nervous, but willing to try",["squeamish"]],["I'm not sure yet",["squeamish"]]]},
+{q:"What does your life allow right now?",o:[["I can study full-time",["fulltime"]],["I need to keep working while I study",["needsWork"]],["Money is my biggest worry",["needsMoney"]]]},
+{q:"How do you feel about busy days and shift work?",o:[["Fine, even exciting",["team"]],["I'd prefer regular hours",["regular"]],["I'm not sure yet",["regular"]]]},
+{q:"How do you prefer to learn?",o:[["By doing and practicing",["handson"]],["By reading and studying",["curious"]],["By talking with people",["team"]]]}
+];
+const STR={care:"You're motivated by caring for people, which is the heart of nursing.",calm:"Staying calm for others is a valuable skill in tense moments.",practical:"A practical mindset helps you organize care and solve problems.",curious:"Curiosity will help you learn health science and keep growing.",team:"You're comfortable with teamwork and busy settings.",handson:"You learn by doing, and nursing training includes plenty of supervised hands-on practice."};
+const EXP={scienceWorry:"Try a free beginner biology or health lesson before applying. Many programs offer foundation or bridging options.",learn:"Look for programs with tutoring, study support and foundation modules.",squeamish:"Volunteer or shadow in a care setting. Comfort grows with exposure, and many roles involve little blood.",needsWork:"Look at part-time, evening or distance programs, or work as a healthcare assistant while you study.",needsMoney:"Research scholarships, grants, employer support and public funding in your country.",regular:"Explore community, school, clinic, education, informatics or policy roles, which often have more regular hours."};
+const PLAN=[["Weeks 1 to 2",[["a1","Talk to a working nurse (a friend, family member or online community)"],["a2","Read about at least 3 nursing areas in the Career Map"]]],["Weeks 3 to 6",[["b1","Find your country's nursing council and read the entry requirements"],["b2","Volunteer or shadow in a care setting, such as a clinic, care home or charity"],["b3","Try a free beginner health or biology lesson online"]]],["Weeks 7 to 12",[["c1","Shortlist 3 nursing programs and note costs, deadlines and prerequisites"],["c2","Make a funding plan: savings, scholarships, part-time work"],["c3","Choose your starting route (see below)"],["c4","Book information sessions or start applications"]]]];
+const ROUTES=[["Healthcare assistant or nursing aide job","Weeks to months. A paid way to test care work."],["Nursing diploma or associate degree","Often about 2 years in many countries."],["Bachelor's degree in nursing","Often 3 to 4 years."],["Graduate-entry or accelerated program","For people who already have a degree. Often 1 to 2 years in some countries."],["Bridging or foundation course","Helps if you need science or other prerequisites."]];
+const JG=[["Shift","A block of working time, such as 8 or 12 hours, including nights and weekends."],["Ward / unit","A section of a hospital for a type of patient, like pediatrics or surgery."],["Clinical placement","Supervised hands-on practice in real care settings during your training."],["Preceptor","An experienced nurse who guides a student or new nurse."],["Registration / licensure","Official permission to work as a nurse, given by a regulator."],["Regulator / nursing council","The official body that sets standards and registers nurses."],["NCLEX","The nursing licensing exam used in the US and Canada."],["Scope of practice","What a nurse is legally allowed to do."],["Triage","Sorting patients by how urgent their need is."],["Vital signs","Pulse, breathing rate, temperature, blood pressure and oxygen level."],["Handover","Passing patient information to the next team."],["Care plan","A written plan for a patient's care and goals."],["Health record / chart","The written or digital record of a patient's care."],["Bedside nursing","Direct, hands-on care of patients."],["Charge nurse","A nurse who leads a shift or unit."],["Specialty","A focused area of nursing, like ICU or pediatrics."],["Nurse practitioner","An advanced nurse who can diagnose and treat in many countries."],["Midwife","A professional who supports pregnancy, birth and newborn care."],["Healthcare assistant (HCA / CNA)","Helps nurses with daily care tasks."],["Rounds","A regular check of patients by the care team."],["Infection control","Practices that stop germs from spreading."],["PRN","Short for 'as needed'. Used for some medicines and for flexible work."],["Evidence-based practice","Using research and experience to choose the best care."],["Continuing education","Ongoing learning after you qualify."],["Prerequisites","Courses or grades required before you can apply."],["Accelerated program","A faster program for people who already have a degree."]];
+let gt='rc',ri=0,rsc=0,fa=[],fshow=false,sck={},jq='';
+try{sck=JSON.parse(localStorage.getItem('nd_start')||'{}')||{}}catch(e){}
+function beginV(){
+ clearInterval(timer);
+ const tabs=[['rc','🧐 Reality check'],['fit','🧭 Is it for me?'],['plan','📅 First 90 days'],['jar','📖 Jargon buster']];
+ app.innerHTML=`<button class="back" id="bk">← Menu</button><h2 style="margin-bottom:6px">🌱 Start Here</h2>
+ <p class="muted" style="margin:0 0 12px">New to nursing? You don't need any experience to explore. Take your time. There are no wrong answers.</p>
+ <div class="tabs">${tabs.map(t=>`<button data-t="${t[0]}" aria-selected="${t[0]===gt}">${t[1]}</button>`).join('')}</div><div id="gb" style="margin-top:12px"></div>`;
+ $('bk').onclick=home;
+ app.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{gt=b.dataset.t;beginV()});
+ ({rc:rcV,fit:fitV,plan:planV,jar:jarV})[gt]();
+}
+function rcV(){
+ const b=$('gb');
+ if(ri>=RC.length){
+  b.innerHTML=`<div class="card res"><div class="big">🎉</div><h2>${rsc}/${RC.length} right</h2><p class="muted">Nursing is more open and varied than most people expect.</p><button class="btn block" id="n1">Next: Is nursing for me?</button><button class="btn ghost block" id="r1">Play again</button></div>`;
+  $('n1').onclick=()=>{gt='fit';beginV()};$('r1').onclick=()=>{ri=0;rsc=0;beginV()};return}
+ const [q,f,x]=RC[ri];
+ b.innerHTML=`<div class="prog"><i style="width:${ri/RC.length*100}%"></i></div><div class="card"><span class="tag">Myth or fact? ${ri+1}/${RC.length}</span><div class="q" style="margin-top:10px">${q}</div>
+ <div class="mf"><button class="opt" data-v="0">❌ Myth</button><button class="opt" data-v="1">✅ Fact</button></div><div id="fb"></div></div>`;
+ const bs=[...b.querySelectorAll('.opt')];
+ bs.forEach(o=>o.onclick=()=>{const ok=(o.dataset.v==='1')===f;if(ok)rsc++;bs.forEach(y=>y.disabled=true);o.classList.add(ok?'ok':'bad');
+  bs.find(y=>(y.dataset.v==='1')===f).classList.add('ok');
+  $('fb').innerHTML=`<div class="ins">${ok?'✅':'💡'} ${x}</div><button class="btn block" id="nx2">${ri+1>=RC.length?'See results':'Next'}</button>`;
+  $('nx2').onclick=()=>{ri++;rcV()}});
+}
+function fitV(){
+ const b=$('gb');
+ if(fshow)return fitRes(b);
+ b.innerHTML=`<div class="card"><h3>Is nursing for me?</h3><p class="muted" style="margin:6px 0 12px">This isn't a test. It shows your starting strengths and what to explore.</p>
+ ${FQ.map((f,i)=>`<div><b style="font-size:.95rem">${i+1}. ${f.q}</b><div style="margin:6px 0 12px">${f.o.map((o,n)=>`<button class="chk" data-q="${i}" data-n="${n}" aria-pressed="${fa[i]===n}"><span>${fa[i]===n?'●':'○'}</span><span>${o[0]}</span></button>`).join('')}</div></div>`).join('')}
+ <button class="btn block" id="fsee">See my starting profile</button></div>`;
+ b.querySelectorAll('.chk').forEach(c=>c.onclick=()=>{fa[+c.dataset.q]=+c.dataset.n;fitV()});
+ $('fsee').onclick=()=>{if(fa.filter(x=>x!==undefined).length<FQ.length)return toast('Answer all '+FQ.length+' questions first');fshow=true;fitV();scrollTo(0,0)};
+}
+function fitRes(b){
+ const cnt={};fa.forEach((n,i)=>FQ[i].o[n][1].forEach(t=>cnt[t]=(cnt[t]||0)+1));
+ const pos=Object.keys(cnt).filter(t=>STR[t]).sort((a,c)=>cnt[c]-cnt[a]).slice(0,3);
+ const exp=Object.keys(cnt).filter(t=>EXP[t]);
+ b.innerHTML=`<div class="card res"><div class="big">🌱</div><h2>Your starting profile</h2><p class="muted" style="margin:0">Everyone starts somewhere. This is a guide, not a verdict.</p></div>
+ <div class="card"><h3>Your strengths</h3><ul class="bl">${(pos.length?pos.map(t=>STR[t]):["You're at the very start, and that's fine. Curiosity is enough to begin."]).map(x=>`<li>${x}</li>`).join('')}</ul></div>
+ <div class="card"><h3>Things to explore</h3><ul class="bl">${exp.map(t=>`<li>${EXP[t]}</li>`).join('')}<li>Talk to a working nurse and ask what a normal week looks like.</li><li>Browse the Career Map for roles that match your interests.</li></ul></div>
+ <button class="btn block" id="fp">See my first 90 days</button><button class="btn ghost block" id="fr">Retake</button>`;
+ $('fp').onclick=()=>{gt='plan';beginV()};$('fr').onclick=()=>{fa=[];fshow=false;fitV()};
+}
+function planV(){
+ const b=$('gb'),all=PLAN.flatMap(g=>g[1]),n=all.filter(i=>sck[i[0]]).length;
+ b.innerHTML=`<div class="card"><h3>Your first 90 days</h3><p class="muted" style="margin:6px 0 8px">Small steps, no commitment needed. Tap to tick off. Saved on this device.</p><div class="prog"><i style="width:${n/all.length*100}%"></i></div><p class="muted" style="margin:0 0 4px">${n}/${all.length} done</p>
+ ${PLAN.map(g=>`<h4 class="gh">${g[0]}</h4>${g[1].map(i=>`<button class="chk" data-id="${i[0]}" aria-pressed="${!!sck[i[0]]}"><span>${sck[i[0]]?'✅':'⬜'}</span><span>${i[1]}</span></button>`).join('')}`).join('')}</div>
+ <div class="card"><h3>Routes if you're starting from zero</h3><ul class="bl">${ROUTES.map(r=>`<li><b>${r[0]}:</b> ${r[1]}</li>`).join('')}</ul><p class="small">Names, length and entry rules vary by country.</p></div>
+ <div class="card"><h3>Entry steps in your region</h3><div class="pills" style="margin-top:8px">${REGIONS.map((r,i)=>`<button data-i="${i}" aria-pressed="${region===i}">${r[0]} ${r[1]}</button>`).join('')}</div><p style="margin:0;font-size:.95rem">${region===null?'Pick your region to see the usual steps.':REGIONS[region][2]}</p></div>`;
+ b.querySelectorAll('.chk').forEach(c=>c.onclick=()=>{const id=c.dataset.id;sck[id]=!sck[id];try{localStorage.setItem('nd_start',JSON.stringify(sck))}catch(e){}planV()});
+ b.querySelectorAll('.pills button').forEach(p=>p.onclick=()=>{region=region===+p.dataset.i?null:+p.dataset.i;planV()});
+}
+function jarV(){
+ const b=$('gb');
+ b.innerHTML=`<input class="sr" id="jq" placeholder="Search words (e.g. shift, triage)" value="${jq.replace(/"/g,'&quot;')}"><div id="jl"></div>`;
+ const draw=()=>{const q=jq.trim().toLowerCase(),it=JG.filter(([t,m])=>!q||(t+' '+m).toLowerCase().includes(q));
+  $('jl').innerHTML=it.length?it.map(([t,m])=>`<div class="mi"><div><b>${t}</b><span>${m}</span></div></div>`).join(''):'<p class="muted">No matches.</p>'};
+ $('jq').oninput=e=>{jq=e.target.value;draw()};draw();
+}
+home();
+</script>
+</body>
+</html>
